@@ -10,6 +10,8 @@
  * to the previous speaker.  The output is a single Utterances json file, which
  * is a json array of utterance objects that have been fixed.
  * 
+ * For more information, please see the readme.md file included with the project.
+ * 
  * Preconditions: Computer has enough memory to process the utterences
  * 
  * Postconditions: utterences.json file produced in current directory.  Errors 
