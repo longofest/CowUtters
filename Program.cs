@@ -44,8 +44,15 @@ using System.IO;
 namespace CowUtters
 {
 
+    /// <summary>
+    /// Represents the entry point of the program.
+    /// </summary>
     public class Program
     {
+        /// <summary>
+        /// The entry point of the program.
+        /// </summary>
+        /// <param name="args">The command-line arguments.</param>
         public static void Main(string[] args)
         {
             Console.OutputEncoding = System.Text.Encoding.UTF8;
@@ -59,7 +66,6 @@ namespace CowUtters
 
             Utterances final = new Utterances();
 
-            //for testing, i'm putting my personal directory here... todo: replace it with /infiles/ which will be what is used in docker
             foreach (string file in Directory.EnumerateFiles("/infiles/", "*.utterance.json")
                 .OrderBy(filename => filename))
             {
@@ -77,8 +83,6 @@ namespace CowUtters
                 var utf8Reader = new Utf8JsonReader(contents);
                 current = JsonSerializer.Deserialize<Utterance>(ref utf8Reader);
 
-
-                //temporary... just print it.
                 if (current == null) {
                     Console.WriteLine("Utterance {0} is Null ???? (file {1})", i, file);
                 }
@@ -96,7 +100,6 @@ namespace CowUtters
                     {
                         Console.WriteLine("---Fragment Alert!!!  Fixing data...");
 
-                        //TODO: take current up to first punctuation and append to previous
                         int fp = previous.indexOfLastPunctuation();
                         if (fp < 0 && !string.IsNullOrEmpty(current.text))
                         {
@@ -112,6 +115,7 @@ namespace CowUtters
                             previous.text = previous.text.Substring(0, fp);
                         }
 
+#region JustPrinting
                         if(previous != null)
                             Console.WriteLine("---New Previous: {0}", previous.text);
                         else
@@ -120,6 +124,7 @@ namespace CowUtters
                             Console.WriteLine("---New Current: {0}", current.text);
                         else
                             Console.WriteLine("---New Current: blank");
+#endregion
                     }
 
                 }

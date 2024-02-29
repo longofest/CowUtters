@@ -38,10 +38,9 @@ namespace CowUtters
         }
 
         /// <summary>
-        /// Checks if the text of the utterance was a complete sentence (ended in.
+        /// Checks if the text of the utterance was a complete sentence (ended in punctuation).
         /// </summary>
         /// <returns>True if the text ends with '.', '!', or '?', otherwise false.</returns>
-        /// <exception cref="InvalidDataException">Thrown when the text is null or empty.</exception>
         public bool endsInPunctuation()
         {
             if (string.IsNullOrEmpty(text))
@@ -51,6 +50,10 @@ namespace CowUtters
             return indexOfLastPunctuation() == (text.Length - 1);
         }
 
+        /// <summary>
+        /// Returns the index of the last punctuation character in the text.
+        /// </summary>
+        /// <returns>The index of the last punctuation character, or -1 if the text is null or empty.</returns>
         public int indexOfLastPunctuation()
         {
             if (string.IsNullOrEmpty(text))
@@ -60,6 +63,12 @@ namespace CowUtters
             return this.text.LastIndexOfAny(".!?".ToCharArray());
         }
 
+        /// <summary>
+        /// Returns the index of the first punctuation character in the text.
+        /// </summary>
+        /// <returns>
+        /// The index of the first punctuation character, or -1 if the text is null or empty.
+        /// </returns>
         public int indexOfFirstPunctuation()
         {
             if (string.IsNullOrEmpty(text))
@@ -67,15 +76,22 @@ namespace CowUtters
                 return -1;
             }
             return this.text.IndexOfAny(".!?".ToCharArray());
-
         }
-
     }
 
+    /// <summary>
+    /// Represents a collection of utterances.
+    /// </summary>
     public class Utterances
     {
-
+        /// <summary>
+        /// Gets or sets the list of utterances.
+        /// </summary>
         public List<Utterance> utterances { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Utterances"/> class.
+        /// </summary>
         public Utterances()
         {
             utterances = new List<Utterance>();
