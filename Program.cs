@@ -36,6 +36,7 @@
 
 //Using directives
 using System.Text.Json;
+using System.IO;
 
 namespace CowUtters
 {
@@ -44,9 +45,44 @@ namespace CowUtters
     {
         public static void Main(string[] args)
         {
-            Console.WriteLine("Goodbye cruel world");
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+            //Lets get to it.  Get my files
+            Console.WriteLine("Examining files mapped to /infiles");
+            int i = 0;
+            //for testing, i'm putting my personal directory here... todo: replace it with /infiles/ which will be what is used in docker
+            foreach (string file in Directory.EnumerateFiles("/Users/jlongo/Library/Mobile Documents/com~apple~CloudDocs/aircoverHw/CowUtters/utterances/", "*.utterance.json")
+                .OrderBy(filename => filename))
+            {
+                byte[] contents;
+                try { 
+                    contents = File.ReadAllBytes(file);
+                }catch(IOException ioe) {
+                    Console.WriteLine("IOException while processing file {0}: {1}", file, ioe.Message);
+
+                    //this may not be the right decision, but for now let's just continue
+                    continue;
+                }
+
+                var utf8Reader = new Utf8JsonReader(contents);
+                Utterance? utterance = JsonSerializer.Deserialize<Utterance>(ref utf8Reader);
+
+                //temporary... just print it.
+                if (utterance == null) {
+                    Console.WriteLine("Utterance {0} is Null ???? (file {1})", i, file);
+                }
+                else
+                {
+                    Console.WriteLine("Utterance {0}: {1}", i, (JsonSerializer.Serialize<Utterance>(utterance))); //todo: double check single quotes are correctly handled
+                }
+
+
+                i++;
+            }
 
         }
+
+
 
     }
 

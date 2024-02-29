@@ -16,5 +16,9 @@ RUN dotnet publish "CowUtters.csproj" -c Release -o /app/publish /p:UseAppHost=f
 
 FROM base AS final
 WORKDIR /app
+
+RUN mkdir -p /infiles
+RUN mkdir -p /out
+
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "CowUtters.dll"]
