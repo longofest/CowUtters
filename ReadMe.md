@@ -20,11 +20,16 @@ There are a couple of assumptions that the application makes about the input tha
 ## Quick Start Instructions (Mac on Apple Silicon)
 
 1. Install [Docker Desktop] if you have not done so already.  For this use it qualifies for use under the free license.  If you use docker cli (without the desktop portion), then that's just fine too, but docker desktop wraps qemu emulation so you can pull and run images that don't match your platform.  You can still set that up with docker cli, but its more steps and I don't cover it here, as the Full Instructions below will make that unnecessary.
-2. 
+2. docker pull 
 
 ## Full Instructions
 
 Okay, you want the full experience, eh?
+
+## Notes
+
+1. The output file is proper Json.  What that means is that single quotes will be encoded as \u0027, because a solitary single quote is illegal json (the input files aren't legal), but the c# parser handles them.
+2. There is no spoon.
 
 ## Author
 

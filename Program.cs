@@ -14,8 +14,8 @@
  * 
  * Preconditions: Computer has enough memory to process the utterences
  * 
- * Postconditions: utterences.json file produced in current directory.  Errors 
- *  will be printed to screen.
+ * Postconditions: utterences.json file produced in current directory.  Errors and
+ *  general run log will be printed to screen.
  *  
  *  
  * Areas for improvement (because this is what I can do in my free time and this
@@ -31,6 +31,9 @@
  *      - Don't just log errors to the screen. Use an logging facility.  This is
  *          the kind of thing that I would come across later and think "this sucks...
  *          who wrote it???" and then realize it was me...
+ *      - The current implementation leaves some CaMeLcase. Considering the quality
+ *          of the transcription, it doesn't seem that big of a deal, but room for
+ *          improvement
  * 
  */
 
@@ -72,7 +75,6 @@ namespace CowUtters
                 }
 
                 var utf8Reader = new Utf8JsonReader(contents);
-                current = null;
                 current = JsonSerializer.Deserialize<Utterance>(ref utf8Reader);
 
 
@@ -82,27 +84,50 @@ namespace CowUtters
                 }
                 else
                 {
-                    //todo: double check single quotes are correctly handled
                     Console.WriteLine("Utterance {0}: {1}", i, JsonSerializer.Serialize<Utterance>(current)); 
                 }
 
                 //speaker switch?
                 if (current != null && !current.sameSpeaker(previous))
                 {
-                    Console.WriteLine("---Speaker Switch: Was there a fragment in Previous?");
+                    Console.WriteLine("---Possible speaker switch: Check previous...");
 
-                    if(previous != null && previous.endsInFragment())//I shouldn't even be here if it is null, but better to check
+                    if (previous != null && !previous.endsInPunctuation())//I shouldn't even be here if it is null, but better to check
                     {
                         Console.WriteLine("---Fragment Alert!!!  Fixing data...");
 
-                        //TODO: take fragment from end of previous and append to beginning of current.
+                        //TODO: take current up to first punctuation and append to previous
+                        int fp = previous.indexOfLastPunctuation();
+                        if (fp < 0 && !string.IsNullOrEmpty(current.text))
+                        {
+                            //No punctuation found... append entire thing
+                            current.text = previous.text + " " + current.text;
+                            previous = null;
+                        }
+                        else if(fp >= 0 && !string.IsNullOrEmpty(previous.text))
+                        {
+                            //append the portion we need
+                            current.text = previous.text.Substring(fp+2, previous.text.Length - fp-2) + " " + current.text;
+                            //trim previous down
+                            previous.text = previous.text.Substring(0, fp);
+                        }
+
+                        if(previous != null)
+                            Console.WriteLine("---New Previous: {0}", previous.text);
+                        else
+                            Console.WriteLine("---New Previous: blank");
+                        if (current != null)
+                            Console.WriteLine("---New Current: {0}", current.text);
+                        else
+                            Console.WriteLine("---New Current: blank");
                     }
 
                 }
 
                 //okay, previous should now be good to add to our final Utterances
-                if(previous != null) { 
-                    final.utterances.Append<Utterance>(previous);
+                //but I'm only going to add it if it still has text
+                if(previous != null && !string.IsNullOrWhiteSpace(previous.text)) { 
+                    final.utterances.Add(previous);
                 }
 
                 //increment loop counter
@@ -114,11 +139,15 @@ namespace CowUtters
 
             //add the last one
             if(current != null) { 
-                final.utterances.Append<Utterance>(current);
+                final.utterances.Add(current);
             }
 
-            //TODO: Write to /out/utterances.json the final object
 
+
+            var options = new JsonSerializerOptions { WriteIndented = true };
+
+            //TODO: Write to /out/utterances.json the final object
+            File.WriteAllBytes("/Users/jlongo/Desktop/final.json", JsonSerializer.SerializeToUtf8Bytes<Utterances>(final, options));
 
         }
 
