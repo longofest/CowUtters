@@ -2,7 +2,7 @@
 
 This project is [Jeffrey Longo]'s' homework to be the 8th employee of the company that is reinventing the way sales is performed and will signglehandedly prevent the next economic recession (company name deliberately witheld).
 
-For convenience, the application is provided not only as source but container form so you don't need to download .net... you just need to install docker and pull/run the container as specified below.
+For convenience, the application is provided not only as source but container form so you don't need to download .net... you just need to install docker and pull the container from [docker hub] as specified below.
 
 ## Assumptions
 
@@ -17,14 +17,21 @@ There are a couple of assumptions that the application makes about the input tha
 > You make an ASS out of YOU and ME...
 > ~Some genius I'm clearly ignoring
 
-## Quick Start Instructions (Mac on Apple Silicon)
+## Quick Start Instructions (Arm64)
 
-1. Install [Docker Desktop] if you have not done so already.  For this use it qualifies for use under the free license.  If you use docker cli (without the desktop portion), then that's just fine too, but docker desktop wraps qemu emulation so you can pull and run images that don't match your platform.  You can still set that up with docker cli, but its more steps and I don't cover it here, as the Full Instructions below will make that unnecessary.
-2. docker pull 
+1. Install [Docker Desktop] if you have not done so already.  For this use it qualifies for use under the free license.  If you use docker cli (without the desktop portion), then that's just fine too, but docker desktop wraps qemu emulation (or utilizes Rosetta on Mac if you enable it) so you can pull and run images that don't match your platform.  You can still set that up with docker cli, but its more steps and I don't cover it here, as the Full Instructions below will make that unnecessary.
+2. docker pull longofest/cowutters
+3. docker run -v [path-to-utterances]:/infiles -v [path-where-you-want-output]:/out longofest/cowutters
 
 ## Full Instructions
 
-Okay, you want the full experience, eh?
+Even the full instructions include using docker because I'm sadistic, but with these instructions you can ensure you are running the code committed here.  This also helps if you are running on an architecture other than
+Arm64 so you don't have to deal with QEMU.
+
+1. git clone https://github.com/longofest/CowUtters.git or git clone git@github.com:longofest/CowUtters.git
+2. cd CowUtters
+3. docker buildx built -t longofest/cowutters .
+4. Step 3 from Quick Start
 
 ## Notes
 
@@ -39,4 +46,5 @@ Okay, you want the full experience, eh?
 
 [Jeffrey Longo]: <https://www.linkedin.com/in/jeffreylongo/>
 [Docker Desktop]: <https://www.docker.com/products/docker-desktop/>
+[docker hub]: <https://hub.docker.com/repository/docker/longofest/cowutters/general>
 

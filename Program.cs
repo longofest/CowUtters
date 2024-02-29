@@ -60,7 +60,7 @@ namespace CowUtters
             Utterances final = new Utterances();
 
             //for testing, i'm putting my personal directory here... todo: replace it with /infiles/ which will be what is used in docker
-            foreach (string file in Directory.EnumerateFiles("/Users/jlongo/Library/Mobile Documents/com~apple~CloudDocs/aircoverHw/CowUtters/utterances/", "*.utterance.json")
+            foreach (string file in Directory.EnumerateFiles("/infiles/", "*.utterance.json")
                 .OrderBy(filename => filename))
             {
                 //get current file
@@ -146,8 +146,7 @@ namespace CowUtters
 
             var options = new JsonSerializerOptions { WriteIndented = true };
 
-            //TODO: Write to /out/utterances.json the final object
-            File.WriteAllBytes("/Users/jlongo/Desktop/final.json", JsonSerializer.SerializeToUtf8Bytes<Utterances>(final, options));
+            File.WriteAllBytes("/out/utterances.json", JsonSerializer.SerializeToUtf8Bytes<Utterances>(final, options));
 
         }
 
