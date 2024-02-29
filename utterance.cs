@@ -19,12 +19,39 @@ namespace CowUtters
         //public string? startTime;
         public string? text { get; set; }
         public ulong timestampMs { get; set; }
+
+        //compares the speaker value of the object and the input value.
+        //true of both are valid objects (non-null speakers) and are the
+        //same speaker
+        public bool sameSpeaker(Utterance? inval)
+        {
+            if(inval != null && !string.IsNullOrEmpty(this.speaker))
+            {
+                return this.speaker == inval.speaker;
+            }
+            return false;
+        }
+
+        public bool endsInFragment()
+        {
+            if (string.IsNullOrEmpty(text))
+            {
+                throw new InvalidDataException("text is null or empty");
+            }
+            return this.text.LastIndexOfAny(".!?".ToCharArray()) != this.text.Length;
+        }
+
     }
 
     public class Utterances
     {
-        public List<Utterance>? utterances;
+
+        public List<Utterance> utterances { get; set; }
+        public Utterances()
+        {
+            utterances = new List<Utterance>();
     }
+}
 
 }
 

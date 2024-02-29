@@ -50,10 +50,17 @@ namespace CowUtters
             //Lets get to it.  Get my files
             Console.WriteLine("Examining files mapped to /infiles");
             int i = 0;
+
+            Utterance? previous = null;
+            Utterance? current = null;
+
+            Utterances final = new Utterances();
+
             //for testing, i'm putting my personal directory here... todo: replace it with /infiles/ which will be what is used in docker
             foreach (string file in Directory.EnumerateFiles("/Users/jlongo/Library/Mobile Documents/com~apple~CloudDocs/aircoverHw/CowUtters/utterances/", "*.utterance.json")
                 .OrderBy(filename => filename))
             {
+                //get current file
                 byte[] contents;
                 try { 
                     contents = File.ReadAllBytes(file);
@@ -65,22 +72,61 @@ namespace CowUtters
                 }
 
                 var utf8Reader = new Utf8JsonReader(contents);
-                Utterance? utterance = JsonSerializer.Deserialize<Utterance>(ref utf8Reader);
+                current = null;
+                current = JsonSerializer.Deserialize<Utterance>(ref utf8Reader);
+
 
                 //temporary... just print it.
-                if (utterance == null) {
+                if (current == null) {
                     Console.WriteLine("Utterance {0} is Null ???? (file {1})", i, file);
                 }
                 else
                 {
-                    Console.WriteLine("Utterance {0}: {1}", i, (JsonSerializer.Serialize<Utterance>(utterance))); //todo: double check single quotes are correctly handled
+                    //todo: double check single quotes are correctly handled
+                    Console.WriteLine("Utterance {0}: {1}", i, JsonSerializer.Serialize<Utterance>(current)); 
                 }
 
+                //speaker switch?
+                if (current != null && !current.sameSpeaker(previous))
+                {
+                    Console.WriteLine("---Speaker Switch: Was there a fragment in Previous?");
 
+                    if(previous != null && previous.endsInFragment())//I shouldn't even be here if it is null, but better to check
+                    {
+                        Console.WriteLine("---Fragment Alert!!!  Fixing data...");
+
+                        //TODO: take fragment from end of previous and append to beginning of current.
+                    }
+
+                }
+
+                //okay, previous should now be good to add to our final Utterances
+                if(previous != null) { 
+                    final.utterances.Append<Utterance>(previous);
+                }
+
+                //increment loop counter
                 i++;
+
+                //save for next round
+                previous = current;
             }
 
+            //add the last one
+            if(current != null) { 
+                final.utterances.Append<Utterance>(current);
+            }
+
+            //TODO: Write to /out/utterances.json the final object
+
+
         }
+
+
+
+
+
+
 
 
 
